@@ -1,8 +1,6 @@
 # gh-semver
 
-| ⚠️ Project archived |
-| ------------------- |
-| Feel free to fork   |
+> Project forked from https://github.com/koozz/gh-semver
 
 This GitHub CLI extension can be used determine the [semantic version] to
 release.
@@ -24,7 +22,7 @@ standard v1.0.0.
 Install the extension by running:
 
 ```bash
-gh extension install koozz/gh-semver
+gh extension install kmendell/gh-semver
 ```
 
 Run this extension with its keyword (default is semver):
