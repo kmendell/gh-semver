@@ -1,8 +1,9 @@
 ---
 name: Auto tag main
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
+  # push:
+  #   branches: [main]
 
 permissions:
   contents: write
@@ -20,7 +21,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh extension install koozz/gh-semver
+          gh extension install kmendell/gh-semver
           gh semver -action
       - name: Tag
         run: |

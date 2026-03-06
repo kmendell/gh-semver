@@ -19,7 +19,7 @@ import (
 	"os"
 
 	"github.com/go-git/go-git/v5"
-	"github.com/koozz/gh-semver/internal/semver"
+	"github.com/kmendell/gh-semver/internal/semver"
 )
 
 func main() {
@@ -49,11 +49,40 @@ func main() {
 		gitTag(repo, tagVersion)
 	}
 
-	format := "%s\n"
-	if action {
-		format = "::set-output name=version::%s\n"
+	if err := emitVersion(tagVersion, action); err != nil {
+		fmt.Fprintf(os.Stderr, "error writing version output: %v\n", err)
+		os.Exit(1)
 	}
-	fmt.Printf(format, tagVersion)
+}
+
+func emitVersion(tagVersion string, action bool) error {
+	if action {
+		if err := writeGitHubActionOutput("version", tagVersion); err != nil {
+			return err
+		}
+	}
+
+	fmt.Println(tagVersion)
+	return nil
+}
+
+func writeGitHubActionOutput(name, value string) error {
+	outputPath := os.Getenv("GITHUB_OUTPUT")
+	if outputPath == "" {
+		return nil
+	}
+
+	file, err := os.OpenFile(outputPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+	if err != nil {
+		return fmt.Errorf("couldn't open GITHUB_OUTPUT: %w", err)
+	}
+	defer file.Close()
+
+	if _, err := fmt.Fprintf(file, "%s=%s\n", name, value); err != nil {
+		return fmt.Errorf("couldn't write GITHUB_OUTPUT: %w", err)
+	}
+
+	return nil
 }
 
 func calculateSemVer(repo *git.Repository, filterPath, prefix string, action, release bool) string {

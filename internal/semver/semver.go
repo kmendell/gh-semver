@@ -56,6 +56,9 @@ func ParseSemVer(input string) (*SemVer, error) {
 
 	semver := NewSemVer(0, 0, 0)
 	matches := re.FindStringSubmatch(input)
+	if matches == nil {
+		return nil, fmt.Errorf("invalid semantic version tag: %q", input)
+	}
 
 	if matches[re.SubexpIndex("v")] == "v" {
 		semver.LeadingV = "v"

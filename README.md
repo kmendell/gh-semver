@@ -1,11 +1,14 @@
 # gh-semver
 
 | ⚠️ Project archived |
-|---------------------|
+| ------------------- |
 | Feel free to fork   |
 
 This GitHub CLI extension can be used determine the [semantic version] to
 release.
+
+The extension is compatible with Go `1.26.x` and writes GitHub Actions step
+outputs using the current `GITHUB_OUTPUT` mechanism.
 
 First it will search all tags and traverse up and down the git log to find the
 latest tag and inspect all commits made since against the [conventional commits]
@@ -13,8 +16,8 @@ standard v1.0.0.
 
 ## Prerequisites
 
-* [GitHub commandline interface]
-* **Repository cloned with full depth**, a shallow clone cannot be traversed.
+- [GitHub commandline interface]
+- **Repository cloned with full depth**, a shallow clone cannot be traversed.
 
 ## Usage (commandline)
 
@@ -49,29 +52,29 @@ semantic version.
 
 In your workflow;
 
-* make sure the checkout has `fetch-depth: 0`
-* install the extension
-* call the extension
-* use the version as you see fit
+- make sure the checkout has `fetch-depth: 0`
+- install the extension
+- call the extension
+- use the version as you see fit
 
 ```yaml
 # ...
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: SemVer
-        id: semver
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh extension install koozz/gh-semver
-          gh semver -action
-      - name: Tag
-        run: |
-          git tag ${{ steps.semver.outputs.version }}
+steps:
+  - name: Checkout repository
+    uses: actions/checkout@v4
+    with:
+      fetch-depth: 0
+  - name: SemVer
+    id: semver
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    run: |
+      gh extension install koozz/gh-semver
+      gh semver -action
+  - name: Tag
+    run: |
+      git tag ${{ steps.semver.outputs.version }}
 
 # ...
 ```
@@ -81,18 +84,18 @@ Or let the extension create the tag:
 ```yaml
 # ...
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: SemVer
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh extension install koozz/gh-semver
-          gh semver -tag
-          git push --tags
+steps:
+  - name: Checkout repository
+    uses: actions/checkout@v4
+    with:
+      fetch-depth: 0
+  - name: SemVer
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    run: |
+      gh extension install koozz/gh-semver
+      gh semver -tag
+      git push --tags
 
 # ...
 ```
@@ -103,10 +106,10 @@ Example can be found in [.github/workflows/auto-tag-main.yml][workflow]
 
 Things on the roadmap:
 
-* Semantic Versioning(-ish) for modules in a mono-repo;
-  * Limit versioning to a directory within the repository.
-  * Prefix the version with a module name.
-* Tests to make the software more robust and reliable.
+- Semantic Versioning(-ish) for modules in a mono-repo;
+  - Limit versioning to a directory within the repository.
+  - Prefix the version with a module name.
+- Tests to make the software more robust and reliable.
 
 ## Issues?
 
@@ -117,6 +120,7 @@ Help me out and describe the [issue] as complete a possible.
 Apache 2.0
 
 <!-- Markdown links -->
+
 [conventional commits]: https://www.conventionalcommits.org/en/v1.0.0/
 [GitHub Actions]: https://docs.github.com/en/actions
 [GitHub commandline interface]: https://cli.github.com/

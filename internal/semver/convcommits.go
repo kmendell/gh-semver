@@ -209,7 +209,7 @@ func (cc *ConventionalCommits) traverse(tagRefs map[string]string, order git.Log
 
 func (cc *ConventionalCommits) isRelevantCommit(commit *object.Commit) bool {
 	// With no filtering, each commit is relevant
-	if cc.prefix == "" {
+	if cc.filterPath == "" {
 		return true
 	}
 
