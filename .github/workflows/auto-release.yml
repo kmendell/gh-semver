@@ -4,11 +4,12 @@ on:
   push:
     tags:
       - "v*"
-  workflow_run:
-    workflows: ["Auto tag main"]
-    types:
-      - completed
   workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing git tag to precompile and release
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -16,11 +17,27 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+      GH_RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          fetch-tags: true
+          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/tags/{0}', inputs.tag) || github.ref }}
+      - name: Validate release tag
+        run: |
+          if [[ -z "${RELEASE_TAG}" ]]; then
+            echo "Release tag could not be determined" >&2
+            exit 1
+          fi
+
+          if ! git rev-parse --verify "refs/tags/${RELEASE_TAG}" >/dev/null 2>&1; then
+            echo "Tag ${RELEASE_TAG} was not found in the repository" >&2
+            exit 1
+          fi
       - name: Pre-compile GitHub extension
         uses: cli/gh-extension-precompile@v2.1.0
         with:
